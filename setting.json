@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "prettier.disableLanguages": ["javascript"],
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "prettier.ignorePath": ".prettierignore"
+}
