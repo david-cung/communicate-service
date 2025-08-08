@@ -23,7 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Giải mã token để lấy userId
   private getUserIdFromToken(token: string): { userId: string; role: string } {
-    const payload = jwt.verify(token, 'secret_key') as {
+    const payload = jwt.verify(token, '1231231232131231223') as {
       userId: string;
       role: string;
     };
@@ -83,9 +83,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     const userId = client.data.userId;
-    console.log(
-        `🛎 Guest user disconnected (socketId ${client.id})`,
-      );
+    console.log(`🛎 Guest user disconnected (socketId ${client.id})`);
     if (userId && this.connections.get(userId) === client.id) {
       this.connections.delete(userId);
     }
@@ -94,41 +92,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_message')
   async handleMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { toUserId: string; message: string },
+    @MessageBody() payload: { toUserId: string; content: string },
   ) {
     const fromUserId = client.data.userId;
     const toSocketId = this.connections.get(payload.toUserId);
-    console.log('payload11', payload);
-    if (toSocketId) {
-      // Gửi ngay
-      this.server.to(toSocketId).emit('receive_message', {
-        from: fromUserId,
-        message: payload.message,
-        createdAt: new Date(),
-      });
-
-      this.server.to('admin').emit('receive_message', {
-        message: payload.message,
-      });
-
-      // Nếu người gửi là guest → không lưu DB
-      if (!client.data.isGuest && !payload.toUserId.startsWith('guest')) {
-        await this.messageService.saveMessage(
-          fromUserId,
-          payload.toUserId,
-          payload.message,
-          true,
-        );
-      }
-    } else {
-      // Người nhận offline
-      if (!client.data.isGuest && !payload.toUserId.startsWith('guest')) {
-        await this.messageService.savePendingMessage(
-          payload.toUserId,
-          fromUserId,
-          payload.message,
-        );
-      }
-    }
+    this.server.to('admin').emit('receive_message', {content: payload.content, from: fromUserId});
   }
 }
