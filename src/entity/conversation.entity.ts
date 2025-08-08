@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-// import { ConversationUser } from './conversation-user.entity';
-// import { Message } from './message.entity';
+import { ConversationUser } from './conversation-user.entity';
+import { Message } from './message.entity';
 
 @Entity()
 export class Conversation {
@@ -13,9 +13,9 @@ export class Conversation {
   @Column({ type: 'enum', enum: ['PERSONAL', 'GROUP'], default: 'PERSONAL' })
   type: 'PERSONAL' | 'GROUP';
 
-//   @OneToMany(() => ConversationUser, cu => cu.conversation)
-//   participants: ConversationUser[];
+  @OneToMany(() => ConversationUser, cu => cu.conversation)
+  participants: ConversationUser[];
 
-//   @OneToMany(() => Message, msg => msg.conversation)
-//   messages: Message[];
+  // @OneToMany(() => Message, msg => msg.conversation)
+  // messages: Message[];
 }
